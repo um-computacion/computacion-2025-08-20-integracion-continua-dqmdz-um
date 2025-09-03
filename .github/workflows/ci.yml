@@ -34,18 +34,6 @@ jobs:
           coverage xml -o cobertura.xml
           coverage report -m > coverage_report.txt
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=dqmdz-um_sample-circleci
-            -Dsonar.organization=dqmdz-um
-            -Dsonar.python.coverage.reportPaths=cobertura.xml
-            -Dsonar.sources=.
-
       - name: Run Pylint and generate report
         run: |
           pylint --rcfile=.pylintrc main.py test.py > pylint_report.txt || true
