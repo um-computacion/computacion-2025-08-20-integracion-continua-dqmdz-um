@@ -1,4 +1,4 @@
-name: CI with Coverage
+name: CI with Coverage and SonarCloud
 
 on:
   push:
@@ -79,12 +79,20 @@ jobs:
           EOF
           python generate_reports.py
 
+      # --- NUEVO PASO: Limpiar archivos intermedios ---
+      - name: Clean up temporary files
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          rm cobertura.xml coverage_report.txt generate_reports.py pylint_report.txt
+
       # --- CAMBIO #2: Reemplazamos 'git push' por la creación de un Pull Request ---
       - name: Create Pull Request with reports
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           commit-message: "docs: Update automated reports [skip ci]"
           title: "Automated Reports Update"
           body: |
@@ -93,3 +101,4 @@ jobs:
             Please review and merge.
           branch: "update-reports"
           delete-branch: true
+
